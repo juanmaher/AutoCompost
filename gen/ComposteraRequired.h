@@ -19,6 +19,7 @@ are defined.
 
 This state machine makes use of operations declared in the state machines interface or internal scopes. Thus the function prototypes:
 	- composteraIface_opLED
+	- composteraIface_readParameters
 are defined.
 
 These functions will be called during a 'run to completion step' (runCycle) of the statechart. 
@@ -28,6 +29,7 @@ There are some constraints that have to be considered for the implementation of 
  
 */
 extern void composteraIface_opLED(const Compostera* handle, const sc_integer LEDNumber, const sc_boolean State);
+extern void composteraIface_readParameters(const Compostera* handle);
 
 
 

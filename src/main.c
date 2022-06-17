@@ -42,6 +42,21 @@ TimerTicks ticks[NOF_TIMERS];
 
 /*==================[internal data definition]===============================*/
 
+static float humidity = 0;
+static float temperature = 0;
+
+typedef enum {
+	HIGH_TEMPERATURE,
+	HIGH_HUMIDITY,
+	LOW_HUMIDITY,
+	STABLE_PARAMETERS,
+	INIT_STATUS,
+	ERROR_READING,
+	HIGH_PARAMETERS
+} status_t;
+
+status_t status;
+
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
@@ -143,6 +158,52 @@ bool_t Button1_GetStatus_(void) {
 	return !gpioRead( TEC1 );
 }
 
+void gpio_init() {
+	gpioInit( GPIO2, GPIO_INPUT );
+}
+
+void composteraIface_readParameters(Compostera* handle) {
+
+//	if(dht11Read(&humidity, &temperature)) {
+//		// Si leyo bien prendo el LEDG y enciendo el LEDR
+//		gpioWrite( LEDG, ON );
+//		gpioWrite( LEDR, OFF );
+//
+////		 int number = 252;
+////		 char buf[10];
+////		 sprintf (buf, "%f", number);
+////		 printf( "numero random %d \r\n", number);
+//
+//
+//		// Informo los valores de los sensores
+////		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
+////		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
+//
+//	} else {
+//		// Si leyo mal apago el LEDG y enciendo el LEDR
+//		gpioWrite( LEDG, OFF );
+//		gpioWrite( LEDR, ON );
+//		// Informo el error de lectura
+//		printf( "Error al leer DHT11.\r\n\r\n");
+//
+//	}
+	if(dht11Read(&humidity, &temperature)) {
+		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
+		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
+		if(temperature > 30 && humidity > 60) {
+			status = HIGH_PARAMETERS;
+		} else if (temperature > 30) {
+			status = HIGH_TEMPERATURE;
+		} else if (humidity > 60) {
+			status = HIGH_HUMIDITY;
+		} else if (humidity < 30) {
+			status = LOW_HUMIDITY;
+		} else status = STABLE_PARAMETERS;
+	} else {
+		status = ERROR_READING;
+		printf( "Error al leer DHT11.\r\n\r\n");
+	}
+}
 
 /**
  * @brief	main routine for statechart example: EDU-CIAA-NXP - Compostera
@@ -152,14 +213,14 @@ int main(void)
 {
 	uint32_t i;
 
-	uint32_t BUTTON_Status;
-	bool_t BUTTON_1_Status;
-
-	uint32_t BUTTON_1_Press = 0;
-	uint32_t BUTTON_Press = 0;
-
 	/* Generic Initialization */
 	boardConfig();
+
+	gpio_init();
+
+	   uartConfig( UART_USB, 115200 ); // Inicializar periferico UART_USB
+
+	   dht11Init( GPIO1 ); // Inicializo el sensor DHT11
 
 	/* Init Ticks counter => TICKRATE_MS */
 	tickConfig( TICKRATE_MS );
@@ -173,6 +234,7 @@ int main(void)
 	/* Statechart Initialization */
 	compostera_init( &statechart );
 	compostera_enter( &statechart );
+
 
 	/* LED state is toggled in the main program */
 	while (1) {
@@ -248,8 +310,36 @@ int main(void)
 //				}
 //			}
 
-			composteraIface_raise_evAberturaTapa(&statechart);
+//			if( !gpioRead(GPIO2) ) {
+//				composteraIface_raise_evAberturaTapa(&statechart);
+//			}
 
+			switch(status) {
+				case INIT_STATUS:
+					break;
+				case STABLE_PARAMETERS:
+					gpioWrite( LEDG, ON );
+					composteraIface_raise_evParametrosEstable(&statechart);
+					break;
+				case HIGH_TEMPERATURE:
+					composteraIface_raise_evTemperaturaMayor60(&statechart);
+					break;
+				case LOW_HUMIDITY:
+					composteraIface_raise_evHumedadMenor40(&statechart);
+					break;
+				case HIGH_HUMIDITY:
+					composteraIface_raise_evHumedadMayor60(&statechart);
+					break;
+				case HIGH_PARAMETERS:
+					composteraIface_raise_evParametrosExcedidos(&statechart);
+					break;
+				case ERROR_READING:
+					gpioWrite( LEDR, ON );
+					composteraIface_raise_evLecturaErronea(&statechart);
+					break;
+				default:
+					break;
+			}
 
 			/* Then Run an Cycle of Statechart */
 			compostera_runCycle(&statechart);		// Run Cycle of Statechart

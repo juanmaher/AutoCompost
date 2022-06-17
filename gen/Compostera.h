@@ -12,36 +12,46 @@ extern "C" {
 */
 
 /*! Define dimension of the state configuration vector for orthogonal states. */
-#define COMPOSTERA_MAX_ORTHOGONAL_STATES 6
+#define COMPOSTERA_MAX_ORTHOGONAL_STATES 5
 
 /*! Define maximum number of time events that can be active at once */
-#define COMPOSTERA_MAX_PARALLEL_TIME_EVENTS 3
+#define COMPOSTERA_MAX_PARALLEL_TIME_EVENTS 2
 
 /*! Define indices of states in the StateConfVector */
-#define SCVI_COMPOSTERA_HUMEDAD_HUMEDECIENDO 0
-#define SCVI_COMPOSTERA_HUMEDAD_DESHUMEDECIENDO 0
-#define SCVI_COMPOSTERA_HUMEDAD_ESPERANDO 0
-#define SCVI_COMPOSTERA_TEMPERATURA_ENFRIANDO 1
-#define SCVI_COMPOSTERA_TEMPERATURA_ESPERANDO 1
-#define SCVI_COMPOSTERA_COMPOSTAR_RELLENANDO 2
-#define SCVI_COMPOSTERA_COMPOSTAR_ESPERANDO 2
-#define SCVI_COMPOSTERA_COMPOSTAR_SONANDO 2
-#define SCVI_COMPOSTERA_COMPOSTAR_MEZCLANDO 2
-#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_LEYENDO 3
-#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_SUPERIOR 3
-#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_ESTABLE 3
-#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_INFERIOR 3
-#define SCVI_COMPOSTERA_SENSOR_TEMPERATURE_LEYENDO 4
-#define SCVI_COMPOSTERA_SENSOR_TEMPERATURE_SUPERIOR 4
-#define SCVI_COMPOSTERA_SENSOR_TEMPERATURE_ESTABLE 4
-#define SCVI_COMPOSTERA_SENSOR_LID_CERRADO 5
-#define SCVI_COMPOSTERA_SENSOR_LID_ABIERTO 5
-#define SCVI_COMPOSTERA_SENSOR_LID_INICIO 5
+#define SCVI_COMPOSTERA_SENSOR_LID_CERRADO 0
+#define SCVI_COMPOSTERA_SENSOR_LID_ABIERTO 0
+#define SCVI_COMPOSTERA_SENSOR_LID_INICIO 0
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_LEYENDO 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_HUM_SUPERIOR 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_ESTABLE 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_HUM_INFERIOR 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_TEMP_SUPERIOR 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_SUPERIOR 1
+#define SCVI_COMPOSTERA_SENSOR_HUMEDAD_ERROR 1
+#define SCVI_COMPOSTERA_HUMEDAD_HUMEDECIENDO 2
+#define SCVI_COMPOSTERA_HUMEDAD_DESHUMEDECIENDO 2
+#define SCVI_COMPOSTERA_HUMEDAD_ESPERANDO 2
+#define SCVI_COMPOSTERA_TEMPERATURA_ENFRIANDO 3
+#define SCVI_COMPOSTERA_TEMPERATURA_ESPERANDO 3
+#define SCVI_COMPOSTERA_COMPOSTAR_RELLENANDO 4
+#define SCVI_COMPOSTERA_COMPOSTAR_ESPERANDO 4
+#define SCVI_COMPOSTERA_COMPOSTAR_SONANDO 4
+#define SCVI_COMPOSTERA_COMPOSTAR_MEZCLANDO 4
 
 /*! Enumeration of all states */ 
 typedef enum
 {
 	Compostera_last_state,
+	Compostera_Sensor_Lid_CERRADO,
+	Compostera_Sensor_Lid_ABIERTO,
+	Compostera_Sensor_Lid_INICIO,
+	Compostera_Sensor_Humedad_LEYENDO,
+	Compostera_Sensor_Humedad_HUM_SUPERIOR,
+	Compostera_Sensor_Humedad_ESTABLE,
+	Compostera_Sensor_Humedad_HUM_INFERIOR,
+	Compostera_Sensor_Humedad_TEMP_SUPERIOR,
+	Compostera_Sensor_Humedad_SUPERIOR,
+	Compostera_Sensor_Humedad_ERROR,
 	Compostera_Humedad_HUMEDECIENDO,
 	Compostera_Humedad_DESHUMEDECIENDO,
 	Compostera_Humedad_ESPERANDO,
@@ -50,17 +60,7 @@ typedef enum
 	Compostera_Compostar_RELLENANDO,
 	Compostera_Compostar_ESPERANDO,
 	Compostera_Compostar_SONANDO,
-	Compostera_Compostar_MEZCLANDO,
-	Compostera_Sensor_Humedad_LEYENDO,
-	Compostera_Sensor_Humedad_SUPERIOR,
-	Compostera_Sensor_Humedad_ESTABLE,
-	Compostera_Sensor_Humedad_INFERIOR,
-	Compostera_Sensor_Temperature_LEYENDO,
-	Compostera_Sensor_Temperature_SUPERIOR,
-	Compostera_Sensor_Temperature_ESTABLE,
-	Compostera_Sensor_Lid_CERRADO,
-	Compostera_Sensor_Lid_ABIERTO,
-	Compostera_Sensor_Lid_INICIO
+	Compostera_Compostar_MEZCLANDO
 } ComposteraStates;
 
 /*! Type definition of the data structure for the ComposteraIface interface scope. */
@@ -68,11 +68,12 @@ typedef struct
 {
 	sc_boolean evHumedadMenor40_raised;
 	sc_boolean evHumedadMayor60_raised;
-	sc_boolean evHumedadEstable_raised;
+	sc_boolean evParametrosEstable_raised;
 	sc_boolean evTemperaturaMayor60_raised;
-	sc_boolean evTemperaturaEstable_raised;
 	sc_boolean evCerradoTapa_raised;
 	sc_boolean evAberturaTapa_raised;
+	sc_boolean evParametrosExcedidos_raised;
+	sc_boolean evLecturaErronea_raised;
 } ComposteraIface;
 
 
@@ -108,13 +109,15 @@ typedef struct
 /*! Type definition of the data structure for the ComposteraTimeEvents interface scope. */
 typedef struct
 {
+	sc_boolean compostera_Sensor_Humedad_LEYENDO_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_HUM_SUPERIOR_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_ESTABLE_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_HUM_INFERIOR_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_TEMP_SUPERIOR_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_SUPERIOR_tev0_raised;
+	sc_boolean compostera_Sensor_Humedad_ERROR_tev0_raised;
 	sc_boolean compostera_Compostar_RELLENANDO_tev0_raised;
 	sc_boolean compostera_Compostar_MEZCLANDO_tev0_raised;
-	sc_boolean compostera_Sensor_Humedad_SUPERIOR_tev0_raised;
-	sc_boolean compostera_Sensor_Humedad_ESTABLE_tev0_raised;
-	sc_boolean compostera_Sensor_Humedad_INFERIOR_tev0_raised;
-	sc_boolean compostera_Sensor_Temperature_SUPERIOR_tev0_raised;
-	sc_boolean compostera_Sensor_Temperature_ESTABLE_tev0_raised;
 } ComposteraTimeEvents;
 
 
@@ -157,20 +160,23 @@ extern void composteraIface_raise_evHumedadMenor40(Compostera* handle);
 /*! Raises the in event 'evHumedadMayor60' that is defined in the default interface scope. */ 
 extern void composteraIface_raise_evHumedadMayor60(Compostera* handle);
 
-/*! Raises the in event 'evHumedadEstable' that is defined in the default interface scope. */ 
-extern void composteraIface_raise_evHumedadEstable(Compostera* handle);
+/*! Raises the in event 'evParametrosEstable' that is defined in the default interface scope. */ 
+extern void composteraIface_raise_evParametrosEstable(Compostera* handle);
 
 /*! Raises the in event 'evTemperaturaMayor60' that is defined in the default interface scope. */ 
 extern void composteraIface_raise_evTemperaturaMayor60(Compostera* handle);
-
-/*! Raises the in event 'evTemperaturaEstable' that is defined in the default interface scope. */ 
-extern void composteraIface_raise_evTemperaturaEstable(Compostera* handle);
 
 /*! Raises the in event 'evCerradoTapa' that is defined in the default interface scope. */ 
 extern void composteraIface_raise_evCerradoTapa(Compostera* handle);
 
 /*! Raises the in event 'evAberturaTapa' that is defined in the default interface scope. */ 
 extern void composteraIface_raise_evAberturaTapa(Compostera* handle);
+
+/*! Raises the in event 'evParametrosExcedidos' that is defined in the default interface scope. */ 
+extern void composteraIface_raise_evParametrosExcedidos(Compostera* handle);
+
+/*! Raises the in event 'evLecturaErronea' that is defined in the default interface scope. */ 
+extern void composteraIface_raise_evLecturaErronea(Compostera* handle);
 
 /*! Gets the value of the variable 'LEDR' that is defined in the default interface scope. */ 
 extern const sc_integer composteraIface_get_lEDR(const Compostera* handle);
