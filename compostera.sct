@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_IPEiAI_CEeaE_NItBGtDFQ" specification="/* Application EDU-CIAA-NXP */&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;/* Using Time Events (Timer Ticks) */&#xD;&#xA;&#xD;&#xA;/* For each button pressed raise a internal event (siTECXOK), and its  ID (valueof) is stored in an internal variable (viTecla). Includes software debounce */&#xD;&#xA;&#xD;&#xA;/* For each particular siTECXOK and viTecla an operation  is done (opLED(LEDX, LED_ON) or opLED(LEDX, LED_OFF)), or rise  internal events (siTitilarLED or SiNoTitilarLED) */&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;interface:&#xD;&#xA;&#xD;&#xA;in event evHumedadMenor40&#xD;&#xA;in event evHumedadMayor60&#xD;&#xA;in event evHumedadEstable&#xD;&#xA;in event evTemperaturaMayor60&#xD;&#xA;in event evTemperaturaEstable&#xD;&#xA;&#xD;&#xA;operation opLED(LEDNumber:integer,&#xD;&#xA;&#x9;State:boolean): void&#xD;&#xA;&#xD;&#xA;const LEDR: integer = 0&#xD;&#xA;const LEDG: integer = 1&#xD;&#xA;const LEDB: integer = 2&#xD;&#xA;const LED1: integer = 3&#xD;&#xA;const LED2: integer = 4&#xD;&#xA;const LED3: integer = 5&#xD;&#xA;&#xD;&#xA;const LED_ON: boolean = true&#xD;&#xA;const LED_OFF: boolean = false&#xD;&#xA;&#xD;&#xA;const TEC1: integer = 1 &lt;&lt; 0&#xD;&#xA;const TEC2: integer = 1 &lt;&lt; 1&#xD;&#xA;const TEC3: integer = 1 &lt;&lt; 2&#xD;&#xA;const TEC4: integer = 1 &lt;&lt; 3&#xD;&#xA;&#xD;&#xA;internal:&#xD;&#xA;&#xD;&#xA;event siTemperaturaMayor60&#xD;&#xA;event siTemperaturaEstable&#xD;&#xA;event siHumedadMenor40&#xD;&#xA;event siHumedadEstable&#xD;&#xA;event siHumedadMayor60&#xD;&#xA;event siAberturaTapa&#xD;&#xA;event siCerradoTapa" name="compostera">
+  <sgraph:Statechart xmi:id="_IPEiAI_CEeaE_NItBGtDFQ" specification="/* Application EDU-CIAA-NXP */&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;/* Using Time Events (Timer Ticks) */&#xD;&#xA;&#xD;&#xA;/* For each button pressed raise a internal event (siTECXOK), and its  ID (valueof) is stored in an internal variable (viTecla). Includes software debounce */&#xD;&#xA;&#xD;&#xA;/* For each particular siTECXOK and viTecla an operation  is done (opLED(LEDX, LED_ON) or opLED(LEDX, LED_OFF)), or rise  internal events (siTitilarLED or SiNoTitilarLED) */&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;interface:&#xD;&#xA;&#xD;&#xA;in event evHumedadMenor40&#xD;&#xA;in event evHumedadMayor60&#xD;&#xA;in event evHumedadEstable&#xD;&#xA;in event evTemperaturaMayor60&#xD;&#xA;in event evTemperaturaEstable&#xD;&#xA;in event evCerradoTapa&#xD;&#xA;in event evAberturaTapa&#xD;&#xA;&#xD;&#xA;operation opLED(LEDNumber:integer,&#xD;&#xA;&#x9;State:boolean): void&#xD;&#xA;&#xD;&#xA;const LEDR: integer = 0&#xD;&#xA;const LEDG: integer = 1&#xD;&#xA;const LEDB: integer = 2&#xD;&#xA;const LED1: integer = 3&#xD;&#xA;const LED2: integer = 4&#xD;&#xA;const LED3: integer = 5&#xD;&#xA;&#xD;&#xA;const LED_ON: boolean = true&#xD;&#xA;const LED_OFF: boolean = false&#xD;&#xA;&#xD;&#xA;const TEC1: integer = 1 &lt;&lt; 0&#xD;&#xA;const TEC2: integer = 1 &lt;&lt; 1&#xD;&#xA;const TEC3: integer = 1 &lt;&lt; 2&#xD;&#xA;const TEC4: integer = 1 &lt;&lt; 3&#xD;&#xA;&#xD;&#xA;internal:&#xD;&#xA;&#xD;&#xA;event siTemperaturaMayor60&#xD;&#xA;event siTemperaturaEstable&#xD;&#xA;event siHumedadMenor40&#xD;&#xA;event siHumedadEstable&#xD;&#xA;event siHumedadMayor60&#xD;&#xA;event siAberturaTapa&#xD;&#xA;event siCerradoTapa" name="compostera">
     <regions xmi:id="_6G2nsNbDEeyqDrMRcdzxGw" name="Humedad">
-      <vertices xsi:type="sgraph:State" xmi:id="_Kj7eINbEEeyqDrMRcdzxGw" specification="entry / turnOnPump()" name="HUMEDECIENDO" incomingTransitions="_dbFKUNbEEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_Kj7eINbEEeyqDrMRcdzxGw" specification="" name="HUMEDECIENDO" incomingTransitions="_dbFKUNbEEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_hA6okNbEEeyqDrMRcdzxGw" specification="siHumedadEstable" target="_N03DYNbEEeyqDrMRcdzxGw"/>
         <outgoingTransitions xmi:id="_MfKJ0NbGEeyqDrMRcdzxGw" specification="siAberturaTapa" target="_N03DYNbEEeyqDrMRcdzxGw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_MfZsYtbEEeyqDrMRcdzxGw" specification="entry / turnOnFan()" name="DESHUMEDECIENDO" incomingTransitions="_ZEu1INbEEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_MfZsYtbEEeyqDrMRcdzxGw" specification="" name="DESHUMEDECIENDO" incomingTransitions="_ZEu1INbEEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_Uoi9sNbEEeyqDrMRcdzxGw" specification="siHumedadEstable" target="_N03DYNbEEeyqDrMRcdzxGw"/>
         <outgoingTransitions xmi:id="_cBCjUNbGEeyqDrMRcdzxGw" specification="siAberturaTapa" target="_N03DYNbEEeyqDrMRcdzxGw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_N03DYNbEEeyqDrMRcdzxGw" specification="entry / turnoOffPump(); turnOffFan()" name="ESPERANDO" incomingTransitions="_Uoi9sNbEEeyqDrMRcdzxGw _hA6okNbEEeyqDrMRcdzxGw _MfKJ0NbGEeyqDrMRcdzxGw _cBCjUNbGEeyqDrMRcdzxGw _lUIp4NbHEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_N03DYNbEEeyqDrMRcdzxGw" specification="" name="ESPERANDO" incomingTransitions="_Uoi9sNbEEeyqDrMRcdzxGw _hA6okNbEEeyqDrMRcdzxGw _MfKJ0NbGEeyqDrMRcdzxGw _cBCjUNbGEeyqDrMRcdzxGw _lUIp4NbHEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_ZEu1INbEEeyqDrMRcdzxGw" specification="siHumedadMayor60" target="_MfZsYtbEEeyqDrMRcdzxGw"/>
         <outgoingTransitions xmi:id="_dbFKUNbEEeyqDrMRcdzxGw" specification="siHumedadMenor40" target="_Kj7eINbEEeyqDrMRcdzxGw"/>
       </vertices>
@@ -53,7 +53,7 @@
       <vertices xsi:type="sgraph:Entry" xmi:id="_pOocQOLKEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_tioyoOLLEeyoWoUyNdJwDg" specification="" target="_sNuDkOLKEeyoWoUyNdJwDg"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_sNuDkOLKEeyoWoUyNdJwDg" specification="entry / readHumidity()" name="LEYENDO" incomingTransitions="_gFZKYOLLEeyoWoUyNdJwDg _lr3qsOLLEeyoWoUyNdJwDg _ry23EOLLEeyoWoUyNdJwDg _tioyoOLLEeyoWoUyNdJwDg">
+      <vertices xsi:type="sgraph:State" xmi:id="_sNuDkOLKEeyoWoUyNdJwDg" specification="" name="LEYENDO" incomingTransitions="_gFZKYOLLEeyoWoUyNdJwDg _lr3qsOLLEeyoWoUyNdJwDg _ry23EOLLEeyoWoUyNdJwDg _tioyoOLLEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_Ze27QOLLEeyoWoUyNdJwDg" specification="evHumedadMayor60" target="_FRRAkOLLEeyoWoUyNdJwDg"/>
         <outgoingTransitions xmi:id="_hpwgIOLLEeyoWoUyNdJwDg" specification="evHumedadMenor40" target="_L2sccOLLEeyoWoUyNdJwDg"/>
         <outgoingTransitions xmi:id="_nVeFwOLLEeyoWoUyNdJwDg" specification="evHumedadEstable" target="_F2w6UOLLEeyoWoUyNdJwDg"/>
@@ -72,7 +72,7 @@
       <vertices xsi:type="sgraph:Entry" xmi:id="_jPxJweLNEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_jPxJwuLNEeyoWoUyNdJwDg" specification="" target="_jPxw0OLNEeyoWoUyNdJwDg"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_jPxw0OLNEeyoWoUyNdJwDg" specification="entry / readTemperature()" name="LEYENDO" incomingTransitions="_jP00J-LNEeyoWoUyNdJwDg _jP2pUOLNEeyoWoUyNdJwDg _jPxJwuLNEeyoWoUyNdJwDg">
+      <vertices xsi:type="sgraph:State" xmi:id="_jPxw0OLNEeyoWoUyNdJwDg" specification="" name="LEYENDO" incomingTransitions="_jP00J-LNEeyoWoUyNdJwDg _jP2pUOLNEeyoWoUyNdJwDg _jPxJwuLNEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_jPy-8OLNEeyoWoUyNdJwDg" specification="evTemperaturaMayor60" target="_jP0NE-LNEeyoWoUyNdJwDg"/>
         <outgoingTransitions xmi:id="_jPzmBOLNEeyoWoUyNdJwDg" specification="evTemperaturaEstable" target="_jP1bNOLNEeyoWoUyNdJwDg"/>
       </vertices>
@@ -87,10 +87,10 @@
       <vertices xsi:type="sgraph:Entry" xmi:id="_O-z8x-LOEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_1FDT0OLOEeyoWoUyNdJwDg" specification="" target="_wElDkOLOEeyoWoUyNdJwDg"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_tPj-Z-LOEeyoWoUyNdJwDg" specification="entry / siCerradoTapa" name="CERRADO" incomingTransitions="_tPjXOeLOEeyoWoUyNdJwDg _PZ45kOLPEeyoWoUyNdJwDg">
+      <vertices xsi:type="sgraph:State" xmi:id="_tPj-Z-LOEeyoWoUyNdJwDg" specification="entry / raise siCerradoTapa" name="CERRADO" incomingTransitions="_tPjXOeLOEeyoWoUyNdJwDg _PZ45kOLPEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_tPlzcOLOEeyoWoUyNdJwDg" specification="evAberturaTapa" target="_O-1KtOLOEeyoWoUyNdJwDg"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_O-1KtOLOEeyoWoUyNdJwDg" specification="entry / siAberturaTapa" name="ABIERTO" incomingTransitions="_tPlzcOLOEeyoWoUyNdJwDg _REKqEOLPEeyoWoUyNdJwDg">
+      <vertices xsi:type="sgraph:State" xmi:id="_O-1KtOLOEeyoWoUyNdJwDg" specification="entry / raise siAberturaTapa" name="ABIERTO" incomingTransitions="_tPlzcOLOEeyoWoUyNdJwDg _REKqEOLPEeyoWoUyNdJwDg">
         <outgoingTransitions xmi:id="_tPjXOeLOEeyoWoUyNdJwDg" specification="evCerradoTapa" target="_tPj-Z-LOEeyoWoUyNdJwDg"/>
       </vertices>
       <vertices xsi:type="sgraph:State" xmi:id="_wElDkOLOEeyoWoUyNdJwDg" specification="" name="INICIO" incomingTransitions="_1FDT0OLOEeyoWoUyNdJwDg">

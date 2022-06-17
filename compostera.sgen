@@ -4,8 +4,8 @@ GeneratorModel for yakindu::c {
 
 		feature Outlet {
 			targetProject = "firmware_v3"
-			targetFolder = "projects/compostera/gen"
-			libraryTargetFolder = "projects/compostera/inc"
+			targetFolder = "TP_Final/AutoCompost/gen"
+			libraryTargetFolder = "TP_Final/AutoCompost/inc"
 		}
 	}
 }

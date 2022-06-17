@@ -205,49 +205,50 @@ int main(void)
 			}
 
 			/* Then Get status of buttons */
-			BUTTON_Status = Buttons_GetStatus_();
-			BUTTON_1_Status = Button1_GetStatus_();
+//			BUTTON_Status = Buttons_GetStatus_();
+//			BUTTON_1_Status = Button1_GetStatus_();
+//
+//			if (BUTTON_1_Status != 0) {
+//				composteraIface_raise_evTEC1Oprimido(&statechart);
+//				BUTTON_1_Press = 1;
+//				BUTTON_Press = BUTTON_1;
+//			} else {
+//				if (BUTTON_Status != 0 && BUTTON_1_Press != 1) {
+//					switch (BUTTON_Status) {
+//						case BUTTON_2:
+//							composteraIface_raise_evTEC2Oprimido(&statechart);
+//							BUTTON_Press = BUTTON_2;
+//							break;
+//						case BUTTON_3:
+//							composteraIface_raise_evTEC3Oprimido(&statechart);
+//							BUTTON_Press = BUTTON_3;
+//							break;
+//						case BUTTON_4:
+//							composteraIface_raise_evTEC4Oprimido(&statechart);
+//							BUTTON_Press = BUTTON_4;
+//							break;
+//					}
+//
+//				} else {
+//					switch (BUTTON_Press) {
+//						case BUTTON_1:
+//							composteraIface_raise_evTEC1NoOprimido(&statechart);
+//							BUTTON_1_Press = 0;
+//							break;
+//						case BUTTON_2:
+//							composteraIface_raise_evTEC2NoOprimido(&statechart);
+//							break;
+//						case BUTTON_3:
+//							composteraIface_raise_evTEC3NoOprimido(&statechart);
+//							break;
+//						case BUTTON_4:
+//							composteraIface_raise_evTEC4NoOprimido(&statechart);
+//							break;
+//					}
+//				}
+//			}
 
-			if (BUTTON_1_Status != 0) {
-				composteraIface_raise_evTEC1Oprimido(&statechart);
-				BUTTON_1_Press = 1;
-				BUTTON_Press = BUTTON_1;
-			} else {
-				if (BUTTON_Status != 0 && BUTTON_1_Press != 1) {
-					switch (BUTTON_Status) {
-						case BUTTON_2:
-							composteraIface_raise_evTEC2Oprimido(&statechart);
-							BUTTON_Press = BUTTON_2;
-							break;
-						case BUTTON_3:
-							composteraIface_raise_evTEC3Oprimido(&statechart);
-							BUTTON_Press = BUTTON_3;
-							break;
-						case BUTTON_4:
-							composteraIface_raise_evTEC4Oprimido(&statechart);
-							BUTTON_Press = BUTTON_4;
-							break;
-					}
-
-				} else {
-					switch (BUTTON_Press) {
-						case BUTTON_1:
-							composteraIface_raise_evTEC1NoOprimido(&statechart);
-							BUTTON_1_Press = 0;
-							break;
-						case BUTTON_2:
-							composteraIface_raise_evTEC2NoOprimido(&statechart);
-							break;
-						case BUTTON_3:
-							composteraIface_raise_evTEC3NoOprimido(&statechart);
-							break;
-						case BUTTON_4:
-							composteraIface_raise_evTEC4NoOprimido(&statechart);
-							break;
-					}
-				}
-			}
-
+			composteraIface_raise_evAberturaTapa(&statechart);
 
 
 			/* Then Run an Cycle of Statechart */
