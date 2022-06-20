@@ -38,7 +38,19 @@ static Compostera statechart;
 
 TimerTicks ticks[NOF_TIMERS];
 
-#define GPIO4 TAPA
+#define BOMBA GPIO0
+#define SENSOR_HUMEDAD GPIO1
+#define TAPA GPIO4
+#define VENTILADOR GPIO5
+
+#define LED_TAPA LED1
+#define LED_BOMBA LED2
+#define LED_VENTILADOR LED3
+#define LED_LECTURA_CORRECTA LEDG
+#define LED_LECTURA_ERRONEA LEDR
+
+#define TEC_BOMBA TEC1
+#define TEC_VENTILADOR TEC2
 
 /*==================[internal functions declaration]=========================*/
 
@@ -136,65 +148,19 @@ void myTickHook( void *ptr ){
 }
 
 
-/*! This function scan all EDU-CIAA-NXP buttons (TEC1, TEC2, TEC3 and TEC4),
- *  and return ID of pressed button (TEC1 or TEC2 or TEC3 or TEC4)
- *  or false if no button was pressed.
- */
-uint32_t Buttons_GetStatus_(void) {
-	uint8_t ret = false;
-	uint32_t idx;
-
-	for (idx = 1; idx < 4; ++idx) {
-		if (gpioRead( TEC1 + idx ) == 0)
-			ret |= 1 << idx;
-	}
-
-	return ret;
-}
-
-/*! This function scan all EDU-CIAA-NXP button TEC1
- *  and return ID of pressed button TEC1
- *  or false if no button was pressed.
- */
-bool_t Button1_GetStatus_(void) {
-	return !gpioRead( TEC1 );
-}
-
 void gpio_init() {
-	gpioInit( GPIO2, GPIO_INPUT );
 	gpioInit( TAPA, GPIO_INPUT );
-	gpioInit( GPIO0, GPIO_OUTPUT );
-	gpioInit( GPIO5, GPIO_OUTPUT );
-	gpioInit( TEC1, GPIO_INPUT );
+	gpioInit( BOMBA, GPIO_OUTPUT );
+	gpioInit( VENTILADOR, GPIO_OUTPUT );
+	gpioInit( TEC_BOMBA, GPIO_INPUT );
 	gpioInit( TEC2, GPIO_INPUT );
 }
 
 void composteraIface_readParameters(Compostera* handle) {
 
-//	if(dht11Read(&humidity, &temperature)) {
-//		// Si leyo bien prendo el LEDG y enciendo el LEDR
-//		gpioWrite( LEDG, ON );
-//		gpioWrite( LEDR, OFF );
-//
-////		 int number = 252;
-////		 char buf[10];
-////		 sprintf (buf, "%f", number);
-////		 printf( "numero random %d \r\n", number);
-//
-//
-//		// Informo los valores de los sensores
-////		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
-////		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
-//
-//	} else {
-//		// Si leyo mal apago el LEDG y enciendo el LEDR
-//		gpioWrite( LEDG, OFF );
-//		gpioWrite( LEDR, ON );
-//		// Informo el error de lectura
-//		printf( "Error al leer DHT11.\r\n\r\n");
-//
-//	}
 	if(dht11Read(&humidity, &temperature)) {
+		gpioWrite( LED_LECTURA_CORRECTA, ON );
+		gpioWrite( LED_LECTURA_ERRONEA, OFF );
 		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
 		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
 		if(temperature > 15 && humidity > 60) {
@@ -203,13 +169,46 @@ void composteraIface_readParameters(Compostera* handle) {
 			status = HIGH_TEMPERATURE;
 		} else if (humidity > 60) {
 			status = HIGH_HUMIDITY;
-		} else if (humidity < 50) {
+		} else if (humidity < 60) {
 			status = LOW_HUMIDITY;
 		} else status = STABLE_PARAMETERS;
 	} else {
+		gpioWrite( LED_LECTURA_ERRONEA, ON );
+		gpioWrite( LED_LECTURA_CORRECTA, OFF );
 		status = ERROR_READING;
 		printf( "Error al leer DHT11.\r\n\r\n");
 	}
+}
+
+void stop_automatic_control() {
+	gpioWrite( LED_TAPA, ON );
+	gpioWrite( BOMBA, ON );
+	gpioWrite( VENTILADOR, ON );
+}
+
+
+void composteraIface_start_drying(const Compostera* handle) {
+	gpioWrite( VENTILADOR, OFF );
+}
+
+void composteraIface_start_cooling(const Compostera* handle) {
+	gpioWrite( VENTILADOR, OFF );
+}
+
+void composteraIface_start_wetting(const Compostera* handle) {
+	gpioWrite( BOMBA, OFF );
+}
+
+void composteraIface_stop_wetting(const Compostera* handle) {
+	gpioWrite( BOMBA, ON );
+}
+
+void composteraIface_stop_cooling(const Compostera* handle) {
+	gpioWrite( VENTILADOR, ON );
+}
+
+void composteraIface_stop_drying(const Compostera* handle) {
+	gpioWrite( VENTILADOR, ON );
 }
 
 /**
@@ -275,46 +274,40 @@ int main(void)
 				}
 			}
 
-			if(gpioRead(TAPA)){
-				gpioWrite( LED1, ON );
-				gpioWrite( GPIO0, ON );
-				gpioWrite( GPIO5, ON );
+			if(gpioRead( TAPA )){
+				stop_automatic_control();
 				composteraIface_raise_evAberturaTapa(&statechart);
 			}else{
 				composteraIface_raise_evCerradoTapa(&statechart);
 
+				gpioWrite( LED_TAPA, OFF );
 
-				gpioWrite( LED1, OFF );
-
-				if(!gpioRead(TEC1)){
-					gpioWrite( GPIO0, OFF );
-					gpioWrite( LED2, OFF );
+				if(!gpioRead( TEC_BOMBA )){
+					gpioWrite( BOMBA, OFF );
+					gpioWrite( LED_BOMBA, OFF );
 				}else{
-					gpioWrite( GPIO0, ON );
-					gpioWrite( LED2, ON );
+					gpioWrite( BOMBA, ON );
+					gpioWrite( LED_BOMBA, ON );
 				}
 
-				if(!gpioRead(TEC2)){
-					gpioWrite( GPIO5, OFF );
-					gpioWrite( LED3, OFF );
+				if(!gpioRead( TEC_VENTILADOR )){
+					gpioWrite( VENTILADOR, OFF );
+					gpioWrite( LED_VENTILADOR, OFF );
 				}else{
-					gpioWrite( GPIO5, ON );
-					gpioWrite( LED3, ON );
+					gpioWrite( VENTILADOR, ON );
+					gpioWrite( LED_VENTILADOR, ON );
 				}
 
 				switch(status) {
 					case INIT_STATUS:
 						break;
 					case STABLE_PARAMETERS:
-						gpioWrite( LEDG, ON );
 						composteraIface_raise_evParametrosEstable(&statechart);
 						break;
 					case HIGH_TEMPERATURE:
-						gpioWrite( GPIO5, OFF );
 						composteraIface_raise_evTemperaturaMayor60(&statechart);
 						break;
 					case LOW_HUMIDITY:
-						gpioWrite( GPIO0, OFF );
 						composteraIface_raise_evHumedadMenor40(&statechart);
 						break;
 					case HIGH_HUMIDITY:
@@ -324,7 +317,6 @@ int main(void)
 						composteraIface_raise_evParametrosExcedidos(&statechart);
 						break;
 					case ERROR_READING:
-						gpioWrite( LEDR, ON );
 						composteraIface_raise_evLecturaErronea(&statechart);
 						break;
 					default:

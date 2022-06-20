@@ -974,6 +974,7 @@ static void enact_Sensor_Humedad_ERROR(Compostera* handle)
 static void enact_Humedad_HUMEDECIENDO(Compostera* handle)
 {
 	/* Entry action for state 'HUMEDECIENDO'. */
+	composteraIface_start_wetting(handle);
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED2, COMPOSTERA_COMPOSTERAIFACE_LED_ON);
 }
 
@@ -981,6 +982,7 @@ static void enact_Humedad_HUMEDECIENDO(Compostera* handle)
 static void enact_Humedad_DESHUMEDECIENDO(Compostera* handle)
 {
 	/* Entry action for state 'DESHUMEDECIENDO'. */
+	composteraIface_start_drying(handle);
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED3, COMPOSTERA_COMPOSTERAIFACE_LED_ON);
 }
 
@@ -990,12 +992,15 @@ static void enact_Humedad_ESPERANDO(Compostera* handle)
 	/* Entry action for state 'ESPERANDO'. */
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED2, COMPOSTERA_COMPOSTERAIFACE_LED_OFF);
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED3, COMPOSTERA_COMPOSTERAIFACE_LED_OFF);
+	composteraIface_stop_wetting(handle);
+	composteraIface_stop_drying(handle);
 }
 
 /* Entry action for state 'ENFRIANDO'. */
 static void enact_Temperatura_ENFRIANDO(Compostera* handle)
 {
 	/* Entry action for state 'ENFRIANDO'. */
+	composteraIface_start_cooling(handle);
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED1, COMPOSTERA_COMPOSTERAIFACE_LED_ON);
 }
 
@@ -1004,6 +1009,7 @@ static void enact_Temperatura_ESPERANDO(Compostera* handle)
 {
 	/* Entry action for state 'ESPERANDO'. */
 	composteraIface_opLED(handle, COMPOSTERA_COMPOSTERAIFACE_LED1, COMPOSTERA_COMPOSTERAIFACE_LED_OFF);
+	composteraIface_stop_cooling(handle);
 }
 
 /* Entry action for state 'RELLENANDO'. */
