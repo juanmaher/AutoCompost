@@ -38,6 +38,8 @@ static Compostera statechart;
 
 TimerTicks ticks[NOF_TIMERS];
 
+#define GPIO4 TAPA
+
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
@@ -160,6 +162,11 @@ bool_t Button1_GetStatus_(void) {
 
 void gpio_init() {
 	gpioInit( GPIO2, GPIO_INPUT );
+	gpioInit( TAPA, GPIO_INPUT );
+	gpioInit( GPIO0, GPIO_OUTPUT );
+	gpioInit( GPIO5, GPIO_OUTPUT );
+	gpioInit( TEC1, GPIO_INPUT );
+	gpioInit( TEC2, GPIO_INPUT );
 }
 
 void composteraIface_readParameters(Compostera* handle) {
@@ -190,13 +197,13 @@ void composteraIface_readParameters(Compostera* handle) {
 	if(dht11Read(&humidity, &temperature)) {
 		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
 		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
-		if(temperature > 30 && humidity > 60) {
+		if(temperature > 15 && humidity > 60) {
 			status = HIGH_PARAMETERS;
 		} else if (temperature > 30) {
 			status = HIGH_TEMPERATURE;
 		} else if (humidity > 60) {
 			status = HIGH_HUMIDITY;
-		} else if (humidity < 30) {
+		} else if (humidity < 50) {
 			status = LOW_HUMIDITY;
 		} else status = STABLE_PARAMETERS;
 	} else {
@@ -218,9 +225,9 @@ int main(void)
 
 	gpio_init();
 
-	   uartConfig( UART_USB, 115200 ); // Inicializar periferico UART_USB
+	uartConfig( UART_USB, 115200 ); // Inicializar periferico UART_USB
 
-	   dht11Init( GPIO1 ); // Inicializo el sensor DHT11
+	dht11Init( GPIO1 ); // Inicializo el sensor DHT11
 
 	/* Init Ticks counter => TICKRATE_MS */
 	tickConfig( TICKRATE_MS );
@@ -235,11 +242,13 @@ int main(void)
 	compostera_init( &statechart );
 	compostera_enter( &statechart );
 
+	composteraIface_raise_evParametrosEstable(&statechart);
 
 	/* LED state is toggled in the main program */
 	while (1) {
 		/* The uC sleeps waiting for an interruption */
 		__WFI();
+
 
 		/* When a interrupt wakes to the uC, the main program validates it,
 		 * checking the waited Flag */
@@ -266,80 +275,65 @@ int main(void)
 				}
 			}
 
-			/* Then Get status of buttons */
-//			BUTTON_Status = Buttons_GetStatus_();
-//			BUTTON_1_Status = Button1_GetStatus_();
-//
-//			if (BUTTON_1_Status != 0) {
-//				composteraIface_raise_evTEC1Oprimido(&statechart);
-//				BUTTON_1_Press = 1;
-//				BUTTON_Press = BUTTON_1;
-//			} else {
-//				if (BUTTON_Status != 0 && BUTTON_1_Press != 1) {
-//					switch (BUTTON_Status) {
-//						case BUTTON_2:
-//							composteraIface_raise_evTEC2Oprimido(&statechart);
-//							BUTTON_Press = BUTTON_2;
-//							break;
-//						case BUTTON_3:
-//							composteraIface_raise_evTEC3Oprimido(&statechart);
-//							BUTTON_Press = BUTTON_3;
-//							break;
-//						case BUTTON_4:
-//							composteraIface_raise_evTEC4Oprimido(&statechart);
-//							BUTTON_Press = BUTTON_4;
-//							break;
-//					}
-//
-//				} else {
-//					switch (BUTTON_Press) {
-//						case BUTTON_1:
-//							composteraIface_raise_evTEC1NoOprimido(&statechart);
-//							BUTTON_1_Press = 0;
-//							break;
-//						case BUTTON_2:
-//							composteraIface_raise_evTEC2NoOprimido(&statechart);
-//							break;
-//						case BUTTON_3:
-//							composteraIface_raise_evTEC3NoOprimido(&statechart);
-//							break;
-//						case BUTTON_4:
-//							composteraIface_raise_evTEC4NoOprimido(&statechart);
-//							break;
-//					}
-//				}
-//			}
+			if(gpioRead(TAPA)){
+				gpioWrite( LED1, ON );
+				gpioWrite( GPIO0, ON );
+				gpioWrite( GPIO5, ON );
+				composteraIface_raise_evAberturaTapa(&statechart);
+			}else{
+				composteraIface_raise_evCerradoTapa(&statechart);
 
-//			if( !gpioRead(GPIO2) ) {
-//				composteraIface_raise_evAberturaTapa(&statechart);
-//			}
 
-			switch(status) {
-				case INIT_STATUS:
-					break;
-				case STABLE_PARAMETERS:
-					gpioWrite( LEDG, ON );
-					composteraIface_raise_evParametrosEstable(&statechart);
-					break;
-				case HIGH_TEMPERATURE:
-					composteraIface_raise_evTemperaturaMayor60(&statechart);
-					break;
-				case LOW_HUMIDITY:
-					composteraIface_raise_evHumedadMenor40(&statechart);
-					break;
-				case HIGH_HUMIDITY:
-					composteraIface_raise_evHumedadMayor60(&statechart);
-					break;
-				case HIGH_PARAMETERS:
-					composteraIface_raise_evParametrosExcedidos(&statechart);
-					break;
-				case ERROR_READING:
-					gpioWrite( LEDR, ON );
-					composteraIface_raise_evLecturaErronea(&statechart);
-					break;
-				default:
-					break;
+				gpioWrite( LED1, OFF );
+
+				if(!gpioRead(TEC1)){
+					gpioWrite( GPIO0, OFF );
+					gpioWrite( LED2, OFF );
+				}else{
+					gpioWrite( GPIO0, ON );
+					gpioWrite( LED2, ON );
+				}
+
+				if(!gpioRead(TEC2)){
+					gpioWrite( GPIO5, OFF );
+					gpioWrite( LED3, OFF );
+				}else{
+					gpioWrite( GPIO5, ON );
+					gpioWrite( LED3, ON );
+				}
+
+				switch(status) {
+					case INIT_STATUS:
+						break;
+					case STABLE_PARAMETERS:
+						gpioWrite( LEDG, ON );
+						composteraIface_raise_evParametrosEstable(&statechart);
+						break;
+					case HIGH_TEMPERATURE:
+						gpioWrite( GPIO5, OFF );
+						composteraIface_raise_evTemperaturaMayor60(&statechart);
+						break;
+					case LOW_HUMIDITY:
+						gpioWrite( GPIO0, OFF );
+						composteraIface_raise_evHumedadMenor40(&statechart);
+						break;
+					case HIGH_HUMIDITY:
+						composteraIface_raise_evHumedadMayor60(&statechart);
+						break;
+					case HIGH_PARAMETERS:
+						composteraIface_raise_evParametrosExcedidos(&statechart);
+						break;
+					case ERROR_READING:
+						gpioWrite( LEDR, ON );
+						composteraIface_raise_evLecturaErronea(&statechart);
+						break;
+					default:
+						break;
+				}
+
+
 			}
+
 
 			/* Then Run an Cycle of Statechart */
 			compostera_runCycle(&statechart);		// Run Cycle of Statechart
