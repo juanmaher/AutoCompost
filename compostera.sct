@@ -49,13 +49,13 @@
       </vertices>
     </regions>
     <regions xmi:id="_6G2nsNbDEeyqDrMRcdzxGw" name="Humedad">
-      <vertices xsi:type="sgraph:State" xmi:id="_Kj7eINbEEeyqDrMRcdzxGw" specification="entry / start_wetting(); opLED(LED2, LED_ON)" name="HUMEDECIENDO" incomingTransitions="_dbFKUNbEEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_Kj7eINbEEeyqDrMRcdzxGw" specification="entry / opLED(LED2, LED_ON)" name="HUMEDECIENDO" incomingTransitions="_dbFKUNbEEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_hA6okNbEEeyqDrMRcdzxGw" specification="siHumedadEstable" target="_N03DYNbEEeyqDrMRcdzxGw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_MfZsYtbEEeyqDrMRcdzxGw" specification="entry / start_drying(); opLED(LED3, LED_ON)" name="DESHUMEDECIENDO" incomingTransitions="_ZEu1INbEEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_MfZsYtbEEeyqDrMRcdzxGw" specification="entry / opLED(LED3, LED_ON)" name="DESHUMEDECIENDO" incomingTransitions="_ZEu1INbEEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_Uoi9sNbEEeyqDrMRcdzxGw" specification="siHumedadEstable" target="_N03DYNbEEeyqDrMRcdzxGw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_N03DYNbEEeyqDrMRcdzxGw" specification="entry / opLED(LED2, LED_OFF); opLED(LED3, LED_OFF); stop_wetting(); stop_drying()" name="ESPERANDO" incomingTransitions="_Uoi9sNbEEeyqDrMRcdzxGw _hA6okNbEEeyqDrMRcdzxGw _lUIp4NbHEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_N03DYNbEEeyqDrMRcdzxGw" specification="entry / opLED(LED2, LED_OFF); opLED(LED3, LED_OFF)" name="ESPERANDO" incomingTransitions="_Uoi9sNbEEeyqDrMRcdzxGw _hA6okNbEEeyqDrMRcdzxGw _lUIp4NbHEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_ZEu1INbEEeyqDrMRcdzxGw" specification="siHumedadMayor60" target="_MfZsYtbEEeyqDrMRcdzxGw"/>
         <outgoingTransitions xmi:id="_dbFKUNbEEeyqDrMRcdzxGw" specification="siHumedadMenor40" target="_Kj7eINbEEeyqDrMRcdzxGw"/>
       </vertices>
@@ -64,11 +64,11 @@
       </vertices>
     </regions>
     <regions xmi:id="_z7O9gNbEEeyqDrMRcdzxGw" name="Temperatura">
-      <vertices xsi:type="sgraph:State" xmi:id="_z7O9gdbEEeyqDrMRcdzxGw" specification="entry / start_cooling(); opLED(LED1, LED_ON)" name="ENFRIANDO" incomingTransitions="_z7QytNbEEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_z7O9gdbEEeyqDrMRcdzxGw" specification="entry / opLED(LED1, LED_ON)" name="ENFRIANDO" incomingTransitions="_z7QytNbEEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_z7PkmtbEEeyqDrMRcdzxGw" specification="siTemperaturaEstable" target="_z7QLo9bEEeyqDrMRcdzxGw"/>
         <outgoingTransitions xmi:id="_oCimUNbGEeyqDrMRcdzxGw" specification="siAberturaTapa" target="_z7QLo9bEEeyqDrMRcdzxGw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_z7QLo9bEEeyqDrMRcdzxGw" specification="entry / opLED(LED1, LED_OFF);&#xD;&#xA;stop_cooling()" name="ESPERANDO" incomingTransitions="_z7PkmtbEEeyqDrMRcdzxGw _oCimUNbGEeyqDrMRcdzxGw _yCDG8NbHEeyqDrMRcdzxGw">
+      <vertices xsi:type="sgraph:State" xmi:id="_z7QLo9bEEeyqDrMRcdzxGw" specification="entry / opLED(LED1, LED_OFF)" name="ESPERANDO" incomingTransitions="_z7PkmtbEEeyqDrMRcdzxGw _oCimUNbGEeyqDrMRcdzxGw _yCDG8NbHEeyqDrMRcdzxGw">
         <outgoingTransitions xmi:id="_z7QytNbEEeyqDrMRcdzxGw" specification="siTemperaturaMayor60" target="_z7O9gdbEEeyqDrMRcdzxGw"/>
       </vertices>
       <vertices xsi:type="sgraph:Entry" xmi:id="_w7aPANbHEeyqDrMRcdzxGw">
@@ -962,11 +962,11 @@
     <edges xmi:id="_58roAO59Eey3Us1nF7rT5g" type="Transition" element="_58nWkO59Eey3Us1nF7rT5g" source="_sNuqoOLKEeyoWoUyNdJwDg" target="_sNuqoOLKEeyoWoUyNdJwDg">
       <children xsi:type="notation:DecorationNode" xmi:id="_58roBO59Eey3Us1nF7rT5g" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_58roBe59Eey3Us1nF7rT5g"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_58roBu59Eey3Us1nF7rT5g" y="10"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_58roBu59Eey3Us1nF7rT5g" x="-7" y="12"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_58roAe59Eey3Us1nF7rT5g" routing="Rectilinear" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_58roA-59Eey3Us1nF7rT5g" fontName="Verdana"/>
-      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_58roAu59Eey3Us1nF7rT5g" points="[16, 1, 46, 5]$[-26, 4, 4, 8]"/>
+      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_58roAu59Eey3Us1nF7rT5g" points="[16, -10, 46, -6]$[83, -10, 113, -6]$[83, 71, 113, 75]$[8, 71, 38, 75]$[8, 4, 38, 8]"/>
       <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_58tdMO59Eey3Us1nF7rT5g" id="(0.9053254437869822,0.9452054794520548)"/>
       <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_58tdMe59Eey3Us1nF7rT5g" id="(0.7218934911242604,0.8904109589041096)"/>
     </edges>

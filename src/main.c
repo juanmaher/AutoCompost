@@ -38,19 +38,20 @@ static Compostera statechart;
 
 TimerTicks ticks[NOF_TIMERS];
 
-#define BOMBA GPIO0
-#define SENSOR_HUMEDAD GPIO1
-#define TAPA GPIO4
-#define VENTILADOR GPIO5
+#define VENTILADOR 				GPIO0
+#define SENSOR_HUMEDAD 			GPIO1
+#define TAPA 					GPIO4
+#define BOMBA 					GPIO7
+#define BUZZER 					GPIO8
 
-#define LED_TAPA LED1
-#define LED_BOMBA LED2
-#define LED_VENTILADOR LED3
-#define LED_LECTURA_CORRECTA LEDG
-#define LED_LECTURA_ERRONEA LEDR
+#define LED_TAPA 				LED1
+#define LED_BOMBA 				LED2
+#define LED_VENTILADOR 			LED3
+#define LED_LECTURA_CORRECTA 	LEDG
+#define LED_LECTURA_ERRONEA 	LEDR
 
-#define TEC_BOMBA TEC1
-#define TEC_VENTILADOR TEC2
+#define TEC_BOMBA 				TEC1
+#define TEC_VENTILADOR 			TEC2
 
 /*==================[internal functions declaration]=========================*/
 
@@ -154,7 +155,12 @@ void gpio_init() {
 	gpioInit( VENTILADOR, GPIO_OUTPUT );
 	gpioInit( TEC_BOMBA, GPIO_INPUT );
 	gpioInit( TEC2, GPIO_INPUT );
+	gpioInit( BUZZER, GPIO_OUTPUT );
 }
+
+#define HIGH_TEMPERATURE_VALUE	30
+#define HIGH_HUMIDITY_VALUE		70
+#define LOW_HUMIDITY_VALUE		40
 
 void composteraIface_readParameters(Compostera* handle) {
 
@@ -163,13 +169,13 @@ void composteraIface_readParameters(Compostera* handle) {
 		gpioWrite( LED_LECTURA_ERRONEA, OFF );
 		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
 		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
-		if(temperature > 15 && humidity > 60) {
+		if(temperature > HIGH_TEMPERATURE_VALUE && humidity > HIGH_HUMIDITY_VALUE) {
 			status = HIGH_PARAMETERS;
-		} else if (temperature > 30) {
+		} else if (temperature > HIGH_TEMPERATURE_VALUE) {
 			status = HIGH_TEMPERATURE;
-		} else if (humidity > 60) {
+		} else if (humidity > HIGH_HUMIDITY_VALUE) {
 			status = HIGH_HUMIDITY;
-		} else if (humidity < 60) {
+		} else if (humidity < LOW_HUMIDITY_VALUE) {
 			status = LOW_HUMIDITY;
 		} else status = STABLE_PARAMETERS;
 	} else {
@@ -184,32 +190,9 @@ void stop_automatic_control() {
 	gpioWrite( LED_TAPA, ON );
 	gpioWrite( BOMBA, ON );
 	gpioWrite( VENTILADOR, ON );
+	gpioWrite( BUZZER, ON );
 }
 
-
-void composteraIface_start_drying(const Compostera* handle) {
-	gpioWrite( VENTILADOR, OFF );
-}
-
-void composteraIface_start_cooling(const Compostera* handle) {
-	gpioWrite( VENTILADOR, OFF );
-}
-
-void composteraIface_start_wetting(const Compostera* handle) {
-	gpioWrite( BOMBA, OFF );
-}
-
-void composteraIface_stop_wetting(const Compostera* handle) {
-	gpioWrite( BOMBA, ON );
-}
-
-void composteraIface_stop_cooling(const Compostera* handle) {
-	gpioWrite( VENTILADOR, ON );
-}
-
-void composteraIface_stop_drying(const Compostera* handle) {
-	gpioWrite( VENTILADOR, ON );
-}
 
 /**
  * @brief	main routine for statechart example: EDU-CIAA-NXP - Compostera
@@ -282,51 +265,64 @@ int main(void)
 
 				gpioWrite( LED_TAPA, OFF );
 
-				if(!gpioRead( TEC_BOMBA )){
-					gpioWrite( BOMBA, OFF );
-					gpioWrite( LED_BOMBA, OFF );
-				}else{
-					gpioWrite( BOMBA, ON );
-					gpioWrite( LED_BOMBA, ON );
-				}
-
-				if(!gpioRead( TEC_VENTILADOR )){
-					gpioWrite( VENTILADOR, OFF );
-					gpioWrite( LED_VENTILADOR, OFF );
-				}else{
-					gpioWrite( VENTILADOR, ON );
-					gpioWrite( LED_VENTILADOR, ON );
-				}
 
 				switch(status) {
 					case INIT_STATUS:
 						break;
 					case STABLE_PARAMETERS:
-						composteraIface_raise_evParametrosEstable(&statechart);
+						if(!gpioRead( TEC_BOMBA )){
+							gpioWrite( BOMBA, OFF );
+							gpioWrite( LED_BOMBA, OFF );
+						}else{
+							gpioWrite( BOMBA, ON );
+							gpioWrite( LED_BOMBA, ON );
+						}
+
+						if(!gpioRead( TEC_VENTILADOR )){
+							gpioWrite( VENTILADOR, OFF );
+							gpioWrite( LED_VENTILADOR, OFF );
+						}else{
+							gpioWrite( VENTILADOR, ON );
+							gpioWrite( LED_VENTILADOR, ON );
+						}
+						//composteraIface_raise_evParametrosEstable(&statechart);
+
 						break;
 					case HIGH_TEMPERATURE:
-						composteraIface_raise_evTemperaturaMayor60(&statechart);
+						//composteraIface_raise_evTemperaturaMayor60(&statechart);
+						gpioWrite( VENTILADOR, OFF );
+						gpioWrite( BOMBA, ON );
 						break;
 					case LOW_HUMIDITY:
-						composteraIface_raise_evHumedadMenor40(&statechart);
+						//composteraIface_raise_evHumedadMenor40(&statechart);
+						gpioWrite( BOMBA, OFF );
+						gpioWrite( VENTILADOR, ON );
 						break;
 					case HIGH_HUMIDITY:
-						composteraIface_raise_evHumedadMayor60(&statechart);
+						//composteraIface_raise_evHumedadMayor60(&statechart);
+						gpioWrite( VENTILADOR, OFF );
+						gpioWrite( BOMBA, ON );
 						break;
 					case HIGH_PARAMETERS:
-						composteraIface_raise_evParametrosExcedidos(&statechart);
+						//composteraIface_raise_evParametrosExcedidos(&statechart);
+						gpioWrite( VENTILADOR, OFF );
+						gpioWrite( BOMBA, OFF );
 						break;
 					case ERROR_READING:
-						composteraIface_raise_evLecturaErronea(&statechart);
+						//composteraIface_raise_evLecturaErronea(&statechart);
+						gpioWrite( BOMBA, ON );
+						gpioWrite( VENTILADOR, ON );
 						break;
 					default:
 						break;
 				}
 
-
+				gpioWrite( BUZZER, OFF );
 			}
 
-
+//			delay(500);
+//			printf( "Temperatura: %d grados C.\r\n", (int) temperature );
+//			printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
 			/* Then Run an Cycle of Statechart */
 			compostera_runCycle(&statechart);		// Run Cycle of Statechart
 		}
