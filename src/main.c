@@ -162,14 +162,24 @@ void gpio_init() {
 #define HIGH_HUMIDITY_VALUE		70
 #define LOW_HUMIDITY_VALUE		40
 
+enum{
+   TEMP_CHAR = 0,
+   HUM_CHAR  = 1,
+   VIE_CHAR  = 2,
+   GRA_CHAR  = 3
+};
+
 void composteraIface_readParameters(Compostera* handle) {
+	int humedad;
+	int temperatura;
+	char hum[4];
+	char temp[4];
 
 	if(dht11Read(&humidity, &temperature)) {
 		gpioWrite( LED_LECTURA_CORRECTA, ON );
-		gpioWrite( LED_LECTURA_ERRONEA, OFF );
-		printf( "Temperatura: %d grados C.\r\n", (int) temperature );
-		printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
-		if(temperature > HIGH_TEMPERATURE_VALUE && humidity > HIGH_HUMIDITY_VALUE) {
+
+		printf( "Leyendo.\r\n\r\n");
+		if(temperature > HIGH_TEMPERATURE_VALUE && humidity < LOW_HUMIDITY_VALUE) {
 			status = HIGH_PARAMETERS;
 		} else if (temperature > HIGH_TEMPERATURE_VALUE) {
 			status = HIGH_TEMPERATURE;
@@ -179,11 +189,30 @@ void composteraIface_readParameters(Compostera* handle) {
 			status = LOW_HUMIDITY;
 		} else status = STABLE_PARAMETERS;
 	} else {
-		gpioWrite( LED_LECTURA_ERRONEA, ON );
 		gpioWrite( LED_LECTURA_CORRECTA, OFF );
-		status = ERROR_READING;
 		printf( "Error al leer DHT11.\r\n\r\n");
 	}
+
+	lcdClear();
+    lcdGoToXY( 0, 0 ); // Poner cursor en 0, 0
+    lcdSendStringRaw( "Tmp" );
+    lcdData(TEMP_CHAR);
+    lcdSendStringRaw( " Hum" );
+    lcdData(HUM_CHAR);
+
+    humedad = (int) humidity;
+	temperatura = (int) temperature;
+	sprintf(hum, "%d", humedad);
+	sprintf(temp, "%d", temperatura);
+
+    lcdGoToXY( 0, 1 );
+    lcdSendStringRaw( temp );
+    lcdData(GRA_CHAR);
+    lcdSendStringRaw( "C" );
+
+    lcdGoToXY( 5, 1 );
+    lcdSendStringRaw( hum );
+    lcdSendStringRaw( "%" );
 }
 
 void stop_automatic_control() {
@@ -192,6 +221,115 @@ void stop_automatic_control() {
 	gpioWrite( VENTILADOR, ON );
 	gpioWrite( BUZZER, ON );
 }
+
+// Caracter personalizado carita feliz :)
+const char smile[8] = {
+   0b00000000,
+   0b00001010,
+   0b00001010,
+   0b00001010,
+   0b00000000,
+   0b00010001,
+   0b00001110,
+   0b00000000,
+};
+
+// Caracter personalizado letra e
+const char e_char[8] = {
+   0b01110,
+   0b10000,
+   0b10000,
+   0b01100,
+   0b01000,
+   0b10000,
+   0b10001,
+   0b01110
+};
+
+// Caracter personalizado letra r
+const char r_char[8] = {
+   0b00000,
+   0b00000,
+   0b00000,
+   0b01110,
+   0b01000,
+   0b01000,
+   0b01000,
+   0b01000
+};
+
+// Caracter personalizado letra i
+const char i_char[8] = {
+   0b00000,
+   0b00100,
+   0b00000,
+   0b00100,
+   0b00100,
+   0b00100,
+   0b00100,
+   0b00110
+};
+
+// Caracter personalizado letra c
+const char c_char[8] = {
+   0b00000,
+   0b00000,
+   0b00000,
+   0b00110,
+   0b01000,
+   0b01000,
+   0b01001,
+   0b00110
+};
+
+//Temperatura - Termometro
+const char tempChar[8] = {
+   0b01110,
+   0b01010,
+   0b01010,
+   0b01110,
+   0b01110,
+   0b10111,
+   0b11111,
+   0b01110
+};
+
+// Humedad - Gota
+const char humChar[8] = {
+   0b00100,
+   0b00100,
+   0b01110,
+   0b10111,
+   0b10111,
+   0b10011,
+   0b01110,
+   0b00000
+};
+
+// Viento
+const char vieChar[8] = {
+   0b00111,
+   0b11100,
+   0b00000,
+   0b00111,
+   0b11100,
+   0b00000,
+   0b00111,
+   0b11100
+};
+
+// Simbolo grados
+const char graChar[8] = {
+   0b01110,
+   0b01010,
+   0b01110,
+   0b00000,
+   0b00000,
+   0b00000,
+   0b00000,
+   0b00000
+};
+
 
 
 /**
@@ -225,6 +363,29 @@ int main(void)
 	compostera_enter( &statechart );
 
 	composteraIface_raise_evParametrosEstable(&statechart);
+
+
+	i2cInit( I2C0, 100000 );
+
+	delay( LCD_STARTUP_WAIT_MS );   // Wait for stable power (some LCD need that)
+
+	// Inicializar LCD de 16x2 (caracteres x lineas) con cada caracter de 5x8 pixeles
+	lcdInit( 16, 2, 5, 8 );
+
+	// Cargar el caracter a CGRAM
+	   // El primer parametro es el codigo del caracter (0 a 7).
+	   // El segundo es el puntero donde se guarda el bitmap (el array declarado
+	   // anteriormente)
+	   lcdCreateChar( TEMP_CHAR, tempChar );
+	   lcdCreateChar( HUM_CHAR, humChar );
+	   lcdCreateChar( VIE_CHAR, vieChar );
+
+	   lcdCreateChar( GRA_CHAR, graChar );
+
+	lcdCursorSet( LCD_CURSOR_OFF ); // Apaga el cursor
+	lcdClear();
+
+
 
 	/* LED state is toggled in the main program */
 	while (1) {
@@ -320,9 +481,6 @@ int main(void)
 				gpioWrite( BUZZER, OFF );
 			}
 
-//			delay(500);
-//			printf( "Temperatura: %d grados C.\r\n", (int) temperature );
-//			printf( "Humedad: %d  %.\r\n\r\n", (int) humidity );
 			/* Then Run an Cycle of Statechart */
 			compostera_runCycle(&statechart);		// Run Cycle of Statechart
 		}
